@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio do Amor ❤️</title>
+    <style>
+        :root { --rosa: #ff85a1; --vermelho: #c62828; --vinho: #880e4f; --branco: #ffffff; --fundo: #fdfcfc; }
+        body { background-color: var(--fundo); font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .card { background: var(--branco); padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 550px; text-align: center; border-top: 5px solid var(--vermelho); }
+        .questao { background: #fff9fa; padding: 20px; border-radius: 12px; text-align: left; margin-bottom: 20px; border-left: 5px solid var(--vermelho); color: #333; font-size: 1.1rem; line-height: 1.5; min-height: 50px; }
+        input { width: 90%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1.1rem; margin-bottom: 15px; outline: none; }
+        button { background: linear-gradient(45deg, var(--rosa), var(--vermelho)); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem; }
+        .msg-amor { color: #444; line-height: 1.6; margin: 20px 0; white-space: pre-line; text-align: left; background: #fff9fa; padding: 15px; border-radius: 10px; }
+        .slider-container { width: 100%; margin: 15px 0; overflow: hidden; border-radius: 15px; display: none; background: #000; position: relative; }
+        .slides { display: flex; transition: transform 0.5s ease; }
+        .slides img { width: 100%; flex-shrink: 0; object-fit: contain; max-height: 350px; }
+        .seta { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.8); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: bold; color: var(--vermelho); }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div id="bloco-principal">
+        <h1 style="color: var(--vinho); font-size: 1.5rem;">Desafio Matemático ❤️</h1>
+        <p style="color: #888; font-size: 0.9rem;">Prove que você é bom de conta e de coração!</p>
+        
+        <div id="fase-pergunta">
+            <div class="questao" id="texto-pergunta">Carregando desafio...</div>
+            <input type="text" id="campo-resposta" placeholder="Sua resposta...">
+            <div id="feedback" style="margin-bottom: 10px; font-weight: bold;"></div>
+            <button onclick="checar()">Desbloquear Fase</button>
+        </div>
+
+        <div id="fase-sucesso" class="hidden">
+            <h2 id="msg-elogio" style="color: var(--vermelho); font-size: 1.2rem;"></h2>
+            <div class="msg-amor" id="texto-amor"></div>
+            
+            <div class="slider-container" id="caixa-slider">
+                <button class="seta" style="left:5px" onclick="mudar(-1)">❮</button>
+                <div class="slides" id="fotos-lista"></div>
+                <button class="seta" style="right:5px" onclick="mudar(1)">❯</button>
+            </div>
+
+            <button onclick="proxima()">Próxima fase ➔</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const dados = [
+        { q: "(EsPCEx) Determine o valor de x:\nlog₂(x - 3) + log₂(x + 3) = log₂ 7", r: "4", e: "Brilhante! Você é demais. ❤️", m: "24/04/2019 ❤️\nFoi o dia que você me escolheu. O dia em que me tornei a mulher mais feliz do mundo!", f: ["foto1.jpg"] },
+        { q: "(Barro Branco) Qual a probabilidade de 2 brancas em 3 retiradas (5B, 3P)? (Ex: 15/28)", r: "15/28", e: "Certo! Minha probabilidade de te amar é 100%!", m: "7 anos de muito amor! Nem tudo foi um mar de rosas, mas estamos aqui, firmes e fortes.", f: ["historia1.jpg", "historia2.jpg"] },
+        { q: "Determine k para o sistema {2x+y=5, x-3y=-8} onde k=x+y.", r: "4", e: "Lógica impecável, amor!", m: "Se lembra disso?", f: ["cruzadinha.jpg"] },
+        { q: "(EFOMM) lim (x→0) [ (sen 5x) / (3x) ] (Ex: 5/3)", r: "5/3", e: "Limite superado! Você é incrível!", m: "O dia do pedido foi o mais importante da minha vida. Me senti muito amada!", f: ["pedido1.jpg", "pedido2.jpg"] },
+        { q: "(Escola Naval) ∫ de 0 a π/2 de (sen x / (sen x + cos x)) dx. (Ex: pi/4)", r: "pi/4", e: "Desafio Final Concluído! ❤️", m: "Sabe o que é o amor?\nPara a ciência é química, mas para mim, o amor é você. ❤️", f: ["final1.jpg"] }
+    ];
+
+    let n = 0;
+    let s = 0;
+
+    function carregarFase() {
+        document.getElementById("texto-pergunta").innerText = dados[n].q;
+        document.getElementById("campo-resposta").value = "";
+        document.getElementById("feedback").innerText = "";
+        document.getElementById("fase-pergunta").classList.remove("hidden");
+        document.getElementById("fase-sucesso").classList.add("hidden");
+    }
+
+    window.checar = function() {
+        const resp = document.getElementById("campo-resposta").value.trim().toLowerCase();
+        if(resp === dados[n].r.toLowerCase()) {
+            document.getElementById("fase-pergunta").classList.add("hidden");
+            document.getElementById("fase-sucesso").classList.remove("hidden");
+            document.getElementById("msg-elogio").innerText = dados[n].e;
+            document.getElementById("texto-amor").innerText = dados[n].m;
+            
+            const lista = document.getElementById("fotos-lista");
+            lista.innerHTML = "";
+            dados[n].f.forEach(img => {
+                const i = document.createElement("img");
+                i.src = img;
+                lista.appendChild(i);
+            });
+            s = 0;
+            document.getElementById("caixa-slider").style.display = "block";
+            ajustar();
+        } else {
+            const f = document.getElementById("feedback");
+            f.innerText = "Resposta incorreta, amor. Tente de novo!";
+            f.style.color = "red";
+        }
+    }
+
+    window.mudar = function(dir) {
+        s += dir;
+        const total = dados[n].f.length;
+        if(s >= total) s = 0; if(s < 0) s = total - 1;
+        ajustar();
+    }
+
+    function ajustar() {
+        document.getElementById("fotos-lista").style.transform = translateX(${-s * 100}%);
+    }
+
+    window.proxima = function() {
+        n++;
+        if(n < dados.length) carregarFase();
+        else document.getElementById("bloco-principal").innerHTML = "<h1>Feliz 7 Anos! ❤️</h1><p>Eu te amo infinitamente!</p>";
+    }
+
+    // Início forçado
+    carregarFase();
+</script>
+</body>
+</html>
